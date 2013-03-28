@@ -1,3 +1,7 @@
+#include <SD.h>
+#include "RTClib.h"
+#include "prom_proto.h"
+
 Prom_proto *board;
 
 void setup() {                
