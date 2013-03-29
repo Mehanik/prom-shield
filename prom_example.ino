@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include <SD.h>
 #include "RTClib.h"
 #include "prom_proto.h"

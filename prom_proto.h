@@ -1,4 +1,6 @@
-
+#include <Arduino.h>
+#include <SD.h>
+#include "RTClib.h"
 
 class Prom_proto{
     private:
