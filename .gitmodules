@@ -1,3 +1,3 @@
 [submodule "RTClib"]
 	path = RTClib
-	url = https://github.com/adafruit/RTClib.git
+	url = https://github.com/Mehanik/RTClib.git
