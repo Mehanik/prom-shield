@@ -1,31 +1,57 @@
-#include <SD.h>
-#include "RTClib.h"
 #include "prom_proto.h"
 
-void Prom_proto::Prom_proto(){
-    for (int i = 0; i < relay_num; i++)
+const uint8_t Prom_proto::relay[2] = {7, 8};
+const uint8_t Prom_proto::relay_num = 2;
+
+const uint8_t Prom_proto::digital_out[4] = {5, 6, A6, A7};
+const uint8_t Prom_proto::digital_out_num = 4;
+
+const uint8_t Prom_proto::digital_in[4] = {2, 3, 4, 9};
+const uint8_t Prom_proto::digital_in_num = 4;
+
+const uint8_t Prom_proto::analog_in[4] = {A0, A1, A2, A3};
+const uint8_t Prom_proto::analog_in_num = 4;
+
+const uint8_t Prom_proto::sd_cs  = 10; 
+const uint8_t Prom_proto::sd_di  = 11;
+const uint8_t Prom_proto::sd_do  = 12; 
+const uint8_t Prom_proto::sd_clk = 13; 
+
+const uint8_t Prom_proto::i2c_sda = A4;
+const uint8_t Prom_proto::i2c_scl = A5;
+
+HardwareSerial & Prom_proto::rs232 = Serial;
+HardwareSerial & Prom_proto::log_serial = Serial;
+
+Status_struct Prom_proto::status = { 
+    .sd_present = 0, 
+    .sd_logging = 0,
+    .serial_logging = 0            
+};
+
+void Prom_proto::init(){
+
+    for (uint8_t i = 0; i < relay_num; i++)
         pinMode(relay[i], OUTPUT);
 
-    for (int i = 0; i < digital_out_num; i++)
+    for (uint8_t i = 0; i < digital_out_num; i++)
         pinMode(digital_out[i], OUTPUT);
 
-    for (int i = 0; i < digital_in_num; i++)
+    for (uint8_t i = 0; i < digital_in_num; i++)
         pinMode(digital_in[i], INPUT);
 
     rs232.begin(9600);
     log_serial.begin(9600);
-    status.serial_logging_enable = 1;
 
-    Wire.begin;
+    Wire.begin();
     rtc.begin();
-
-    if (! RTC.isrunning()){
+    if (! rtc.isrunning()){
+        //following line sets the RTC to the date & time this sketch was compiled
+        rtc.adjust(DateTime(__DATE__, __TIME__));
         logging("RTC is NOT running!");
-        // following line sets the RTC to the date & time this sketch was compiled
-        RTC.adjust(DateTime(__DATE__, __TIME__));
     }
 
-    sdLoggingStart();
+    logging("Initialization complete");
 }
 
 void Prom_proto::logging(String message)
@@ -33,25 +59,26 @@ void Prom_proto::logging(String message)
     DateTime now = rtc.now();
 
     // sending by serial
-    if (status.serial_logging_enable){
-        log_serial.print('[');
-        log_serial.print(now.year, DEC);
-        log_serial.print('-');
-        log_serial.print(now.month, DEC);
-        log_serial.print('-');
-        log_serial.print(now.day, DEC);
-        log_serial.print(' ');
-        log_serial.print(now.hour, DEC);
-        log_serial.print(':');
-        log_serial.print(now.minute, DEC);
-        log_serial.print(':');
-        log_serial.print(now.second, DEC);
-        log_serial.print("]  ");
-        log_serial.print(message);
+    if (status.serial_logging){
+        Serial.print('[');
+        Serial.print(now.year(), DEC);
+        Serial.print('-');
+        Serial.print(now.month(), DEC);
+        Serial.print('-');
+        Serial.print(now.day(), DEC);
+        Serial.print(' ');
+        Serial.print(now.hour(), DEC);
+        Serial.print(':');
+        Serial.print(now.minute(), DEC);
+        Serial.print(':');
+        Serial.print(now.second(), DEC);
+        Serial.print("]  ");
+        Serial.print(message);
+        Serial.print('\n');
     }
 
     // writing to file
-    if (status.sd_logging_enable && status.sd_present){
+    if (status.sd_logging && status.sd_present){
         ;
     }
 }

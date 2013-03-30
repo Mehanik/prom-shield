@@ -1,47 +1,53 @@
+#ifndef PROM_PROTO_H
+#define PROM_PROTO_H
+
 #include <Arduino.h>
 #include <SD.h>
-#include "RTClib.h"
+#include <RTClib.h>
+#include <Wire.h>
+
+struct Status_struct{
+    int sd_present : 1;
+    int sd_logging : 1;
+    int serial_logging : 1;
+};
 
 class Prom_proto{
-    private:
-        const int relay[2] = {7, 8};
-        const int relay_num = 2;
-
-        const int digital_out[4] = {5, 6, A6, A7};
-        const int digital_out_num = 4;
-
-        const int digital_in[4] = {2, 3, 4, 9};
-        const int digital_in_num = 4;
-
-        const int analog_in[4] = {A0, A1, A2, A3};
-        const int analog_in_num = 4;
-
-        const int sd_cs  = 10; 
-        const int sd_di  = 11;
-        const int sd_do  = 12; 
-        const int sd_clk = 13; 
-
-        const int i2c_sda = A4;
-        const int i2c_scl = A5;
-
-        struct {
-            int sd_present : 1;
-            int sd_logging_enable : 1;
-            int serial_logging_enable : 1;
-        } status = { 
-            .sd_present = 0, 
-            .sd_logging_enable = 0,
-            .serial_logging_enable = 0            
-        };
-
     public:
-        const HardwareSerial &rs232 = Serial;
-        const HardwareSerial &log_serial = Serial;
+        static HardwareSerial &rs232;
+        static HardwareSerial &log_serial;
         RTC_DS1307 rtc;
 
-        void Prom_proto();
+        void init();
         void logging(String message);
 
-        void enableSDlogging() {status.sd_logging_enable = 1};
-        void disableSDlogging() {status.sd_logging_enable = 0};
-}
+        void enableSDlogging() {status.sd_logging = 1;}
+        void disableSDlogging() {status.sd_logging = 0;}
+        void enableSerialLogging() {status.serial_logging = 1;}
+        void disableSerialLogging() {status.serial_logging = 0;}
+
+    private:
+        static const uint8_t relay[2];
+        static const uint8_t relay_num;
+
+        static const uint8_t digital_out[4];
+        static const uint8_t digital_out_num;
+
+        static const uint8_t digital_in[4];
+        static const uint8_t digital_in_num;
+
+        static const uint8_t analog_in[4];
+        static const uint8_t analog_in_num;
+
+        static const uint8_t sd_cs;
+        static const uint8_t sd_di;
+        static const uint8_t sd_do;
+        static const uint8_t sd_clk;
+
+        static const uint8_t i2c_sda;
+        static const uint8_t i2c_scl;
+
+        static Status_struct status;
+};
+
+#endif
