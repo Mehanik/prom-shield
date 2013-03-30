@@ -7,9 +7,25 @@
 #include <Wire.h>
 
 struct Status_struct{
-    int sd_present : 1;
-    int sd_logging : 1;
-    int serial_logging : 1;
+    uint8_t sd_present : 1;
+    uint8_t sd_logging : 1;
+    uint8_t serial_logging : 1;
+};
+
+struct Byte{
+    uint8_t bit0 : 1;
+    uint8_t bit1 : 1;
+    uint8_t bit2 : 1;
+    uint8_t bit3 : 1;
+    uint8_t bit4 : 1;
+    uint8_t bit5 : 1;
+    uint8_t bit6 : 1;
+    uint8_t bit7 : 1;
+};
+
+union ByteUnion{
+    Byte b;
+    uint8_t i;
 };
 
 class Prom_proto{
@@ -26,8 +42,18 @@ class Prom_proto{
         void enableSerialLogging() {status.serial_logging = 1;}
         void disableSerialLogging() {status.serial_logging = 0;}
 
+        void digitalWrite(const uint8_t, const uint8_t);
+        void analogWrite(const uint8_t, const uint8_t);
+        uint8_t digitalRead(const uint8_t);
+        void rellayWrite(const uint8_t, const uint8_t);
+        uint8_t rellayRead(const uint8_t);
+        float analogReadVolts(const uint8_t);
+        float analogReadAmps(const uint8_t);
+        uint8_t analogReadLogic(const uint8_t);
+        uint8_t keyboardRead(const uint8_t);
+
     private:
-        static const uint8_t relay[2];
+        static const uint8_t relay_out[2];
         static const uint8_t relay_num;
 
         static const uint8_t digital_out[4];
@@ -39,6 +65,9 @@ class Prom_proto{
         static const uint8_t analog_in[4];
         static const uint8_t analog_in_num;
 
+        static const uint8_t keyboard[1];
+        static const uint8_t keyboard_num;
+
         static const uint8_t sd_cs;
         static const uint8_t sd_di;
         static const uint8_t sd_do;
@@ -46,6 +75,8 @@ class Prom_proto{
 
         static const uint8_t i2c_sda;
         static const uint8_t i2c_scl;
+
+        static const ByteUnion supports_pwm;
 
         static Status_struct status;
 };
