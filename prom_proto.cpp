@@ -159,7 +159,7 @@ void Prom_proto::rellayWrite(const uint8_t num, const uint8_t value){
 
 #define ADC_COEF_V (1.1 / 1024.0 * 11.0)
 #define ADC_COEF_A (1.1 * 11.0 / 500.0 / 1024.0)
-#define ADC_THRESHOLD (1024.0 / 11 * 9) // 9V threshold voltage
+#define ADC_THRESHOLD (1024 / 11.0 / 1.1 * 9) // 9V threshold voltage
 float Prom_proto::analogReadVolts(const uint8_t num){
     if (num < analog_in_num)
         return (float) ::analogRead(analog_in[num]) * ADC_COEF_V;
