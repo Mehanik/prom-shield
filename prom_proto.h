@@ -41,14 +41,15 @@ class Prom_proto{
         void disableSDlogging() {status.sd_logging = 0;}
         void enableSerialLogging() {status.serial_logging = 1;}
         void disableSerialLogging() {status.serial_logging = 0;}
+        uint8_t sd_init();
 
         void digitalWrite(const uint8_t, const uint8_t);
         void analogWrite(const uint8_t, const uint8_t);
         uint8_t digitalRead(const uint8_t);
         void rellayWrite(const uint8_t, const uint8_t);
-        uint8_t rellayRead(const uint8_t);
         float analogReadVolts(const uint8_t);
         float analogReadAmps(const uint8_t);
+        uint16_t analogReadRAW(const uint8_t num);
         uint8_t analogReadLogic(const uint8_t);
         uint8_t keyboardRead(const uint8_t);
 
