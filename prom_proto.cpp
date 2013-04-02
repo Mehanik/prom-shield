@@ -135,18 +135,25 @@ void Prom_proto::logging(String message)
     }
 }
 
-void Prom_proto::digitalWrite(const uint8_t num, const uint8_t value){
+void Prom_proto::digitalOutWrite(const uint8_t num, const uint8_t value){
     if (num < digital_out_num)
         ::digitalWrite(digital_out[num], value);
 }
 
-void Prom_proto::analogWrite(const uint8_t num, const uint8_t value){
+uint8_t Prom_proto::digitalOutRead(const uint8_t num){
+    if (num < digital_out_num)
+        return ::digitalRead(digital_out[num]);
+    else
+        return 0;
+}
+
+void Prom_proto::analogOutWrite(const uint8_t num, const uint8_t value){
     if (num < digital_out_num && (supports_pwm.i & (1 << num)))
         ::analogWrite(digital_out[num], value);
 }
 
-uint8_t Prom_proto::digitalRead(const uint8_t num){
-    if (num < digital_out_num)
+uint8_t Prom_proto::digitalInRead(const uint8_t num){
+    if (num < digital_in_num)
         return ::digitalRead(digital_in[num]);
     else
         return 0;
@@ -155,6 +162,13 @@ uint8_t Prom_proto::digitalRead(const uint8_t num){
 void Prom_proto::rellayWrite(const uint8_t num, const uint8_t value){
     if (num < relay_num)
         ::digitalWrite(relay_out[num], value);
+}
+
+uint8_t Prom_proto::relayRead(const uint8_t num){
+    if (num < relay_num)
+        return ::digitalRead(relay_out[num]);
+    else
+        return 0;
 }
 
 #define ADC_COEF_V (1.1 / 1024.0 * 11.0)
