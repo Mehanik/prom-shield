@@ -100,38 +100,33 @@ void Prom_proto::logging(String message)
     }
 
     // writing to file
-    if (status.sd_logging ){
-        if (!status.sd_present)
-            sd_init(); // try to reinitialize card
+    if (status.sd_logging && status.sd_present){
+        File log_file = SD.open("system.log", FILE_WRITE);
 
-        if (status.sd_present){
-            File log_file = SD.open("system.log", FILE_WRITE);
-
-            //if the file is available, write to it:
-            if (log_file) {
-                log_file.print('[');
-                log_file.print(now.year(), DEC);
-                log_file.print('-');
-                log_file.print(now.month(), DEC);
-                log_file.print('-');
-                log_file.print(now.day(), DEC);
-                log_file.print(' ');
-                log_file.print(now.hour(), DEC);
-                log_file.print(':');
-                log_file.print(now.minute(), DEC);
-                log_file.print(':');
-                log_file.print(now.second(), DEC);
-                log_file.print("]  ");
-                log_file.print(message);
-                log_file.print('\n');
-                log_file.close();
-            }  
-            // if the file isn't open, pop up an error:
-            else {
-                status.sd_present = 0;
-                logging("Error opening system.log");
-            } 
-        }
+        //if the file is available, write to it:
+        if (log_file) {
+            log_file.print('[');
+            log_file.print(now.year(), DEC);
+            log_file.print('-');
+            log_file.print(now.month(), DEC);
+            log_file.print('-');
+            log_file.print(now.day(), DEC);
+            log_file.print(' ');
+            log_file.print(now.hour(), DEC);
+            log_file.print(':');
+            log_file.print(now.minute(), DEC);
+            log_file.print(':');
+            log_file.print(now.second(), DEC);
+            log_file.print("]  ");
+            log_file.print(message);
+            log_file.print('\n');
+            log_file.close();
+        }  
+        // if the file isn't open, pop up an error:
+        else {
+            status.sd_present = 0;
+            logging("Error opening system.log");
+        } 
     }
 }
 
@@ -172,7 +167,7 @@ uint8_t Prom_proto::relayRead(const uint8_t num){
 }
 
 #define ADC_COEF_V (1.1 / 1024.0 * 11.0)
-#define ADC_COEF_A (1.1 * 11.0 / 500.0 / 1024.0)
+#define ADC_COEF_A (ADC_COEF_V / 500)
 #define ADC_THRESHOLD (1024 / 11.0 / 1.1 * 9) // 9V threshold voltage
 float Prom_proto::analogReadVolts(const uint8_t num){
     if (num < analog_in_num)
